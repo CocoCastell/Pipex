@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -25,10 +25,9 @@
 # include "../libft/gnl_b/includes/get_next_line_bonus.h"
 # include "../libft/ft_printf_b/includes/ft_printf_bonus.h"
 
-void	fd_error(char *msg, int fd1, int fd2);
+void	simple_error(char *msg);
 void	*get_path(char **command, char **envp);
 void	*find_path(char **path, char **command);
-void	command_execution(char **command, char **envp);
 void	child_process(char *argv[], char **envp, int pipe_fd[2]);
 void	parent_process(char *argv[], char **envp, int pipe_fd[2]);
 void	error_free(char **command, char *path, char **path_env, char *msg);

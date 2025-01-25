@@ -33,8 +33,12 @@ void	error_free(char **command, char *path, char **path_env, char *msg)
 	exit(2);
 }
 
-void	simple_error(char *msg)
+void	fd_error(char *msg, int fd1, int fd2)
 {
+	if (fd1 > 2)
+		close(fd1);
+	if (fd2 > 2)
+		close(fd2);
 	perror(msg);
 	exit(1);
 }
