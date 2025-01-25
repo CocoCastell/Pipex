@@ -7,50 +7,73 @@
 # include <sys/types.h>
 # include <errno.h>
 
-int	main()
+int	main(int argc, char *argv[], char *envp[])
 {
 	int	pid;
 	int	fd[2];
+	int infile;
+	int output;
 
 	pipe(fd);
+	infile = open(argv[1], O_RDONLY);
+	if (infile == -1)
+		return (printf("Erreur\n"), 1);
+	output = open(argv[2], O_WRONLY | O_CREAT, 0644);
+	if (output == -1)
+		return (printf("Erreur2\n"), 1);
+	if (dup2(infile, STDIN_FILENO) == -1)
+		return (printf("Erreur3\n"), 1);
 	pid = fork();
-	if (pid == 0) {
-	int pid2;
-	int fd2[2];
-	
-	pipe(fd2);
-	pid2 = fork();
-	if (pid2 != 0) {
-		int nb2;
-		close(fd[1]);
-		close(fd2[0]);
-		read(fd[0], &nb2, sizeof(nb2));
-		close(fd[0]);
-		nb2 += 6;
-		write(fd2[1], &nb2, sizeof(nb2));
-		close(fd2[1]);
+	if (pid == -1)
+		return (printf("Erreur4\n"), 1);
+	if (pid == 0) { 
+		int pid2;
+		int fd2[2];
+		
+		if (pipe(fd2) == -1)
+			return (printf("Erreur5\n"), 1);
+		pid2 = fork();
+		if (pid2 == -1)
+			return (printf("Erreur6\n"), 1);
+		if (pid2 == 0) {
+			char *arg[2];
+			close(fd[1]);
+			close(fd[0]);
+			close(fd2[0]);
+			if (dup2(fd2[1], STDOUT_FILENO) == -1)
+				return (printf("Erreur7\n"), 1);
+			close(fd2[1]);
+			arg[0] = "cat";
+			arg[1] = NULL;
+			execve("/bin/cat", arg, envp);
+		}
+		else {
+			waitpid(pid2, NULL, 0);
+			char *arg[3];
+			close(fd[0]);
+			close(fd2[1]);
+			dup2(fd2[0], STDIN_FILENO);
+			close(fd2[0]);
+			dup2(fd[1], STDOUT_FILENO);
+			close(fd[1]);
+			arg[0] = "grep";
+			arg[1] = "if only";
+			arg[2] = NULL;
+			execve("/bin/grep", arg, envp);
+			}
 	}
 	else {
-		int	nb3;
-		
-		close(fd[0]);
-		close(fd2[1]);
-		read(fd2[0], &nb3, sizeof(nb3));
-		close(fd2[0]);
-		nb3 += 5;
-		write(fd[1], &nb3, sizeof(nb3));
 		close(fd[1]);
-	}
-	} else {
-		int nb = 4;
-		int new_nb = 0;
-
-		write(fd[1], &nb, sizeof(nb));
-		close(fd[1]);
-		waitpid(pid, NULL, 0);
-		read(fd[0], &new_nb, sizeof(new_nb));
+		if (waitpid(pid, NULL, 0) == -1)
+			return (printf("Erreur10\n"), 1);
+		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
-		write(1, "hola\n", 5);
-		printf("nb is: %d\n", new_nb);
+		dup2(output, STDOUT_FILENO);
+		close(output);
+		char *arg[3];
+		arg[0] = "cat";
+		arg[1] = NULL;
+		execve("/bin/cat", arg, envp);
+		return (0);
 	}
 }
