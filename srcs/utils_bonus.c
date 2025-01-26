@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/24 15:56:33 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/26 16:32:25 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,11 @@ void	fd_error(char *msg, int fd1, int fd2)
 		close(fd1);
 	if (fd2 > 2)
 		close(fd2);
-	perror(msg);
-	exit(1);
+	if (msg != NULL)
+	{
+		perror(msg);
+		exit(1);
+	}
 }
 
 void	*find_path(char **path, char **command)
@@ -88,3 +91,4 @@ void	*get_path(char **command, char **envp)
 	free(path);
 	return (full_path);
 }
+
