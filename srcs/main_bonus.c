@@ -12,6 +12,13 @@
 
 #include "../includes/pipex.h"
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
 void	command_execution(char **command, char **envp)
 {
 	char	*path;
@@ -26,252 +33,109 @@ void	command_execution(char **command, char **envp)
 void	recursion(char *argv[], char *envp[], int pipe_fd[2], int data[2])
 {
 	char **command;
-	int file_fd = -1;
+	int	file_fd = -1;
 	int	new_pipe_fd[2];
 	int	pid;
-	int status;
-	char buffer[1000];
+	int	status;
 
 	ft_printf("argc: %d i: %d\n", data[0], data[1]);
 	if (data[1] == data[0] - 2)
 	{
 		ft_printf("data: %d\n", data[1]);
 		close(pipe_fd[1]);
-		file_fd = open(argv[data[0] - 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		if (file_fd == -1)
-			fd_error("Error opening second file", pipe_fd[0], -1);
-		if (dup2(file_fd, STDOUT_FILENO) == -1)
-			fd_error("Error dup2", pipe_fd[0], file_fd);
-		close(file_fd);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
 			fd_error("Error dup2", pipe_fd[0], -1);
 		close(pipe_fd[0]);
+		file_fd = open(argv[data[0] - 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+		if (file_fd == -1)
+			fd_error("Error opening second file", -1, -1);
+		if (dup2(file_fd, STDOUT_FILENO) == -1)
+			fd_error("Error file dup2", file_fd, -1);
+		close(file_fd);
 		command = ft_split(argv[data[1]], ' ');
 		command_execution(command, envp);
 	}
 	else
 	{
-		if (data[1] > 2 && pipe(new_pipe_fd) == -1)
-			fd_error("Pipe error", pipe_fd[0], pipe_fd[1]);
+		pipe(new_pipe_fd);
 		pid = fork();
 		if (pid == -1)
 		{
-			fd_error(NULL, pipe_fd[0], pipe_fd[1]);
-			fd_error("Error forking", new_pipe_fd[0], new_pipe_fd[1]);
+			fd_error(NULL, new_pipe_fd[0], new_pipe_fd[1]);
+			fd_error("Fork error", pipe_fd[0], -1);
 		}
 		if (pid == 0)
 		{
 			close(new_pipe_fd[0]);
-			if (data[1] == 4)
-			{
-				int nb;
-				close(pipe_fd[1]);
-				dup2(pipe_fd[0], STDIN_FILENO);
-				//ft_memset(buffer, 1, 1000);
-				if (read(pipe_fd[0], &nb, sizeof(int)) == 0)
-					ft_printf("stringempty\n", buffer);
-				ft_printf("string DATA 4: %d\n", buffer);
-			}
-			else if (data[1] == 3)
-			{
-				close(pipe_fd[1]);
-			//	dup2(pipe_fd[0], STDIN_FILENO);
-				ft_memset(buffer, 1, 1000);
-				if (read(pipe_fd[0], buffer, 1000) == 0)
-					ft_printf("stringempty\n", buffer);
-				ft_printf("string DATA 3: %s\n", buffer);
-				int nb = 80;
-				write(new_pipe_fd[1], &nb, sizeof(int));
-				//dup2(new_pipe_fd[1], STDOUT_FILENO);
-				//command = ft_split(argv[data[1]], ' ');
-				//command_execution(command, envp);
-			}
-			/*if (data[1] > 2)
-			{
-				close(pipe_fd[1]);
-				if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-					fd_error("Error dup2", pipe_fd[0], new_pipe_fd[1]);
-				close(pipe_fd[0]);
-				if (dup2(new_pipe_fd[1], STDOUT_FILENO) == -1)
-					fd_error("Error dup2", new_pipe_fd[1], -1);
-			}*/
-			else
-			{
-				close(pipe_fd[0]);
-				if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-					fd_error("Error dup2", new_pipe_fd[1], pipe_fd[1]);
-				close(pipe_fd[1]);
-			}
-		//	close(new_pipe_fd[1]);
-			command = ft_split(argv[data[1]], ' ');
-			command_execution(command, envp);
-		}
-		else
-		{
-			int arr[2];
-			while (waitpid(pid, &status, 0) > 0)
-			{
-				if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
-					fd_error("Exit programm with status 2", pipe_fd[0], new_pipe_fd[1]);
-			}
-			//new_pipe_fd[0] = pipe_fd[0];
-			if (data[1] == 2)
-			{
-				close(pipe_fd[1]);
-				arr[0] = pipe_fd[0];
-				arr[1] = 0;
-			}
-			else if (data[1] % 2 == 1)
-			{
-				close(pipe_fd[0]);
-				close(new_pipe_fd[1]);
-				arr[0] = new_pipe_fd[0];
-				arr[1] = pipe_fd[1];
-			}
-			else
-			{
-				close(pipe_fd[1]);
-				close(new_pipe_fd[0]);
-				arr[0] = pipe_fd[0];
-				arr[1] = new_pipe_fd[1];
-			}
-			data[1]++;
-			recursion(argv, envp, arr, data);
-		}
-	}
-}
-
-
-/*void	recursion(char *argv[], char *envp[], int pipe_fd[2], int data[2])
-{
-	char **command;
-	int file_fd = -1;
-	int	new_pipe_fd[2];
-	int	pid;
-	int status;
-	
-	ft_printf("argc: %d i: %d\n", data[0], data[1]);
-	if (data[1] == data[0] - 2)
-	{
-		ft_printf("data: %d\n", data[1]);
-		close(pipe_fd[1]);
-		file_fd = open(argv[data[0] - 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		if (file_fd == -1)
-			fd_error("Error opening second file", pipe_fd[0], -1);
-		if (dup2(file_fd, STDOUT_FILENO) == -1)
-			fd_error("Error dup2", pipe_fd[0], file_fd);
-		close(file_fd);
-		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			fd_error("Error dup2", pipe_fd[0], -1);
-		close(pipe_fd[0]);
-		command = ft_split(argv[data[1]], ' ');
-		command_execution(command, envp);
-	}
-	else
-	{
-		if (pipe(new_pipe_fd) == -1)
-			fd_error("Pipe error", pipe_fd[0], pipe_fd[1]);
-		pid = fork();
-		if (pid == -1)
-		{
-			fd_error(NULL, pipe_fd[0], pipe_fd[1]);
-			fd_error("Error forking", new_pipe_fd[0], new_pipe_fd[1]);
-		}
-		if (pid == 0)
-		{
-			close(new_pipe_fd[0]);
-			ft_printf("chck]n\n");
-			if (data[1] > 2)
-			{
-				close(pipe_fd[1]);
-				if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-					fd_error("Error dup2", pipe_fd[0], new_pipe_fd[1]);
-				close(pipe_fd[0]);
-				if (dup2(new_pipe_fd[1], STDOUT_FILENO) == -1)
-					fd_error("Error dup2", new_pipe_fd[1], -1);
-			}
-			else
-			{
-				close(pipe_fd[0]);
-				if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-					fd_error("Error dup2", new_pipe_fd[1], pipe_fd[1]);
-				close(pipe_fd[1]);
-			}
+			if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+				fd_error("Error dup2", pipe_fd[0], new_pipe_fd[1]);
+			close(pipe_fd[0]);
+			if (dup2(new_pipe_fd[1], STDOUT_FILENO) == -1)
+				fd_error("Error dup2", new_pipe_fd[1], -1);
 			close(new_pipe_fd[1]);
 			command = ft_split(argv[data[1]], ' ');
-			ft_printf("cmd: %s\n", command[0]);
 			command_execution(command, envp);
 		}
 		else
 		{
-			close(pipe_fd[1]);
-			close(new_pipe_fd[0]);
+			close(pipe_fd[0]);
+			close(new_pipe_fd[1]);
 			while (waitpid(pid, &status, 0) > 0)
 			{
 				if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
-					fd_error("Exit programm with status 2", pipe_fd[0], new_pipe_fd[1]);
+				{
+					if (data[1] == 2)
+						fd_error(NULL, new_pipe_fd[0], new_pipe_fd[1]);
+					fd_error("Exit programm with status 2", pipe_fd[1], -1);
+				}
 			}
-			new_pipe_fd[0] = pipe_fd[0];
 			data[1]++;
 			recursion(argv, envp, new_pipe_fd, data);
 		}
 	}
-}*/
+}
 
-/*void	child_process(char *full_command, char **envp)
+void	pre_recursion(char *argv[], char *envp[], int data[2])
 {
-	int		pipe_fd[2];
-	pid_t	pid;
-	char	*command_string;
-	char	*path;
-	
+	int	pipe_fd[2];
+	int	pid;
+	int	status;
+	char	**command;
+
 	if (pipe(pipe_fd) == -1)
-		error;
+		fd_error("Pipe error", -1, -1);
 	pid = fork();
-	if (pid == -1)
-		error;
 	if (pid == 0)
 	{
 		close(pipe_fd[0]);
-		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-			errror;
+		dup2(pipe_fd[1], STDOUT_FILENO);
 		close(pipe_fd[1]);
-		command_string = ft_split(full_command, ' ');
-		command_execution(command_string, envp);
+		command = ft_split(argv[data[1]], ' ');
+		command_execution(command, envp);
 	}
 	else
 	{
+		waitpid(pid, &status, 0);
 		close(pipe_fd[1]);
-		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			error;
-		close(pipe_fd[0]);
-		waitpid(pid, NULL, 0);
+		recursion(argv, envp, pipe_fd, data);
 	}
-}*/
+}
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	int	i;
 	int	infile_fd;
-	int	pipe_fd[2];
 	int	data[2];
 
 	if (argc >= 4)
 	{
-		i = 0;
 		infile_fd = open(argv[1], O_RDONLY);
 		if (infile_fd == -1)
 			fd_error("Error opening first file", -1, -1);
 		if (dup2(infile_fd, STDIN_FILENO) == -1)
 			fd_error("Error dup2", infile_fd, -1);
-	//	while (i < argc)
-	//		child_process(argv[++i]);
-		if (pipe(pipe_fd) == -1)
-			fd_error("Pipe error", infile_fd, -1);
-		
 		data[0] = argc;
 		data[1] = 2;
-		recursion(argv, envp, pipe_fd, data);
+		pre_recursion(argv, envp, data);
 	}
 	else
 		return (ft_printf("Wrong number of arguments\n"), 1);
