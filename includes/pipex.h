@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/24 12:04:18 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/26 16:57:10 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,17 @@
 # include "../libft/gnl_b/includes/get_next_line_bonus.h"
 # include "../libft/ft_printf_b/includes/ft_printf_bonus.h"
 
-void	fd_error(char *msg, int fd1, int fd2);
 void	*get_path(char **command, char **envp);
+void	fd_error(char *msg, int fd1, int fd2);
 void	*find_path(char **path, char **command);
 void	command_execution(char **command, char **envp);
+void	error_free(char **command, char *path, char **path_env, char *msg);
+
+// MANDATORY
 void	child_process(char *argv[], char **envp, int pipe_fd[2]);
 void	parent_process(char *argv[], char **envp, int pipe_fd[2]);
-void	error_free(char **command, char *path, char **path_env, char *msg);
+
+// BONUS //
+void    recursion(char *argv[], char *envp[], int pipe_fd[2], int data[2]);
 
 #endif

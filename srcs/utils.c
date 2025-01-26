@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:51:47 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/26 16:58:23 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,26 @@ void	*find_path(char **path, char **command)
 		i++;
 	}
 	return (NULL);
+}
+
+void	*get_path(char **command, char **envp)
+{
+	char	**path;
+	char	*full_path;
+	int		i;
+
+	i = 0;
+	while (envp[i] && ft_strnstr(envp[i], "PATH", 4) == NULL)
+		i++;
+	if (envp[i] == NULL)
+		error_free(command, NULL, NULL, "Command not found");
+	path = ft_split(envp[i] + 5, ':');
+	if (path == NULL)
+		error_free(command, NULL, NULL, "Memory allocation failed");
+	full_path = find_path(path, command);
+	i = -1;
+	while (path[++i])
+		free(path[i]);
+	free(path);
+	return (full_path);
 }

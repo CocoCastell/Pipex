@@ -1,5 +1,7 @@
 .SILENT:
 
+# Variables
+
 NAME = pipex
 CC = cc
 CFLAGS = -Werror -Wextra -Wall
@@ -8,6 +10,11 @@ LIBFT = libft/
 INC = includes/pipex.h
 SRCS = srcs/main.c srcs/utils.c
 OBJS = $(SRCS:.c=.o)
+
+BONUS_SRCS = srcs/main_bonus.c srcs/utils_bonus.c
+BONUS_OBJS = $(BONUS_SRCS:bonus.c=bonus.o)
+
+# Colors
 
 DEFAULT = \033[0m
 GRAY = \033[0;90m
@@ -19,19 +26,24 @@ MAGENTA = \033[0;95m
 CYAN = \033[0;96m
 WHITE = \033[0;97m
 
+# Rules
 
 all : $(NAME) Makefile
 
-$(NAME) : $(LIBFT) $(SRCS) $(OBJS) $(LIBFT) Makefile
+$(NAME) : $(LIBFT) $(SRCS) $(OBJS) Makefile
 	make --no-print-directory -C $(LIBFT)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT)libft.a -o $(NAME)
 
+bonus : $(LIBFT) $(BONUS_SRCS) $(BONUS_OBJS) Makefile
+	make --no-print-directory -C $(LIBFT)
+	$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIBFT)libft.a -o $(NAME)_bonus
+
 clean : 
 	make fclean --no-print-directory -C $(LIBFT)
-	rm -rf $(OBJS)
+	rm -rf $(OBJS) $(BONUS_OBJS)
 
 fclean : clean
-	rm $(NAME)
+	rm $(NAME) $(NAME)_bonus
 
 re : fclean all
 
