@@ -10,40 +10,39 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex.h"
+#include "../includes/pipex_bonus.h"
 
-void	error_free(char **command, char *path, char **path_env, char *msg)
+void	command_execution(char *argv[], char **envp, int data[3])
 {
-	int	i;
+	char	*path;
+	char	**command;
 
-	i = -1;
-	if (path_env != NULL)
-	{
-		while (path_env[++i])
-			free(path_env[i]);
-		free(path_env[i]);
-	}
-	i = -1;
-	while (command[++i])
-		free(command[i]);
-	free(command);
-	if (path != NULL)
-		free(path);
-	perror(msg);
-	exit(2);
+	command = ft_split(argv[data[1]], ' ');
+	path = get_path(command, envp);
+	if (path == NULL)
+		error_free(command, NULL, NULL, "Command not found");
+	if (execve((const char *)path, command, envp) == -1)
+		error_free(command, path, NULL, "Execution error");
 }
 
-void	fd_error(char *msg, int fd1, int fd2)
+void	outfile_command(char *argv[], char *envp[], int pipe_fd[2], int data[3])
 {
-	if (fd1 > 2)
-		close(fd1);
-	if (fd2 > 2)
-		close(fd2);
-	if (msg != NULL)
-	{
-		perror(msg);
-		exit(1);
-	}
+	int	file_fd;
+	
+	file_fd = -1;
+	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+		fd_error("Error dup2", pipe_fd[0], -1, -1);
+	close(pipe_fd[0]);
+	if (data[2] == 0)
+		file_fd = open(argv[data[0] - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else
+		file_fd = open(argv[data[0] - 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (file_fd == -1)
+		fd_error("Error opening second file", -1, -1, -1);
+	if (dup2(file_fd, STDOUT_FILENO) == -1)
+		fd_error("Error file dup2", file_fd, -1, -1);
+	close(file_fd);
+	command_execution(argv, envp, data);
 }
 
 void	*find_path(char **path, char **command)

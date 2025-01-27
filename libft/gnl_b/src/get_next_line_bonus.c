@@ -13,7 +13,7 @@
 #include "../includes/get_next_line_bonus.h"
 //Allibera els nodes amb el fd correcte i reconnecta els altres en aquest cas
 
-void	free_lst(t_list_gnl **lst, int fd, int nd_nb, t_list_gnl *next_nd)
+void	free_list(t_list_gnl **lst, int fd, int nd_nb, t_list_gnl *next_nd)
 {
 	t_list_gnl	*current;
 	t_list_gnl	*temp;

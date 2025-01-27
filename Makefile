@@ -11,7 +11,7 @@ INC = includes/pipex.h
 SRCS = srcs/main.c srcs/utils.c
 OBJS = $(SRCS:.c=.o)
 
-BONUS_SRCS = srcs/main_bonus.c srcs/utils_bonus.c
+BONUS_SRCS = bonus/main_bonus.c bonus/utils_bonus.c bonus/error_manager_bonus.c
 BONUS_OBJS = $(BONUS_SRCS:bonus.c=bonus.o)
 
 # Colors

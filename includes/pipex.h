@@ -30,12 +30,7 @@ void	fd_error(char *msg, int fd1, int fd2);
 void	*find_path(char **path, char **command);
 void	command_execution(char **command, char **envp);
 void	error_free(char **command, char *path, char **path_env, char *msg);
-
-// MANDATORY
 void	child_process(char *argv[], char **envp, int pipe_fd[2]);
 void	parent_process(char *argv[], char **envp, int pipe_fd[2]);
-
-// BONUS //
-void    recursion(char *argv[], char *envp[], int pipe_fd[2], int data[2]);
 
 #endif
