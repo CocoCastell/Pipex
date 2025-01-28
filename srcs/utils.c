@@ -12,35 +12,28 @@
 
 #include "../includes/pipex.h"
 
-void	error_free(char **command, char *path, char **path_env, char *msg)
+void    free_array(char **command, char **path_env, char *path)
 {
-	int	i;
+        int     i;
 
-	i = -1;
-	if (path_env != NULL)
-	{
-		while (path_env[++i])
-			free(path_env[i]);
-		free(path_env[i]);
-	}
-	i = -1;
-	while (command[++i])
-		free(command[i]);
-	free(command);
-	if (path != NULL)
-		free(path);
-	perror(msg);
-	exit(2);
-}
-
-void	fd_error(char *msg, int fd1, int fd2)
-{
-	if (fd1 > 2)
-		close(fd1);
-	if (fd2 > 2)
-		close(fd2);
-	perror(msg);
-	exit(1);
+        i = -1;
+        if (path_env != NULL)
+        {
+                while (path_env[++i])
+                        free(path_env[i]);
+                free(path_env[i]);
+                free(path_env);
+        }
+        i = -1;
+        if (command != NULL)
+        {
+                while (command[++i])
+                        free(command[i]);
+                free(command[i]);
+                free(command);
+        }
+        if (path != NULL)
+                free(path);
 }
 
 void	*find_path(char **path, char **command)
@@ -54,11 +47,17 @@ void	*find_path(char **path, char **command)
 	{
 		half_path = ft_strjoin(path[i], "/");
 		if (half_path == NULL)
-			error_free(command, NULL, path, "memory allocation failed\n");
+		{
+			free_array(command, path, NULL);
+			error_failure("Error: null pointer", 1);
+		}
 		full_path = ft_strjoin(half_path, command[0]);
 		free(half_path);
 		if (full_path == NULL)
-			error_free(command, NULL, path, "memory allocation failed\n");
+		{
+			free_array(command, path, NULL);
+			error_failure("Error: null pointer", 1);
+		}
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
 		free(full_path);
@@ -74,13 +73,18 @@ void	*get_path(char **command, char **envp)
 	int		i;
 
 	i = 0;
+	if (access(command[0], F_OK | X_OK) == 0)
+		return (command[0]);
 	while (envp[i] && ft_strnstr(envp[i], "PATH", 4) == NULL)
 		i++;
 	if (envp[i] == NULL)
-		error_free(command, NULL, NULL, "Command not found");
+		return (NULL);
 	path = ft_split(envp[i] + 5, ':');
 	if (path == NULL)
-		error_free(command, NULL, NULL, "Memory allocation failed");
+	{
+		free_array(command, path, NULL);
+		error_failure("Error: null pointer", 1);
+	}
 	full_path = find_path(path, command);
 	i = -1;
 	while (path[++i])

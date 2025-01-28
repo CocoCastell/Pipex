@@ -25,12 +25,14 @@
 # include "../libft/gnl_b/includes/get_next_line_bonus.h"
 # include "../libft/ft_printf_b/includes/ft_printf_bonus.h"
 
+void	free_array(char **command, char **path_env, char *path);
 void	*get_path(char **command, char **envp);
 void	fd_error(char *msg, int fd1, int fd2);
 void	*find_path(char **path, char **command);
+void	wait_for_child(pid_t pid, int fd1_to_close, int fd2_to_close);
 void	command_execution(char **command, char **envp);
-void	error_free(char **command, char *path, char **path_env, char *msg);
 void	child_process(char *argv[], char **envp, int pipe_fd[2]);
+void	error_failure(char *msg, int return_flag);
 void	parent_process(char *argv[], char **envp, int pipe_fd[2]);
 
 #endif

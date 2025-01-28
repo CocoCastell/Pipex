@@ -12,25 +12,13 @@
 
 #include "../includes/pipex_bonus.h"
 
-void	error_free(char **command, char *path, char **path_env, char *msg)
+void    error_failure(char *msg, int return_flag)
 {
-	int	i;
-
-	i = -1;
-	if (path_env != NULL)
-	{
-		while (path_env[++i])
-			free(path_env[i]);
-		free(path_env[i]);
-	}
-	i = -1;
-	while (command[++i])
-		free(command[i]);
-	free(command);
-	if (path != NULL)
-		free(path);
-	perror(msg);
-	exit(2);
+        perror(msg);
+        if (return_flag == 127)
+                exit(127);
+        else
+                exit(EXIT_FAILURE);
 }
 
 void	close_fd(int fd1, int fd2, int fd3)
@@ -50,13 +38,24 @@ void	fd_error(char *msg, int fd1, int fd2, int fd3)
 	exit(1);
 }
 
-void	wait_for_child(pid_t pid, int fd_to_close)
+void	wait_for_child(pid_t pid, int fd1, int fd2, int fd3)
 {
 	int	status;
 
 	while (waitpid(pid, &status, 0) > 0)
 	{
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 2)
-			fd_error("Exit programm", fd_to_close, -1, -1);
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) == 127)
+			{
+				close_fd(fd1, fd2, fd3);
+				exit(127);
+			}
+			if (WEXITSTATUS(status) == 1)
+			{
+				close_fd(fd1, fd2, fd3);
+				exit(1);
+			}
+		}
 	}
 }

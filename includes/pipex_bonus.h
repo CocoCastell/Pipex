@@ -27,12 +27,15 @@
 
 
 // ERROR
+
 void	close_fd(int fd1, int fd2, int fd3);
-void	wait_for_child(pid_t pid, int fd_to_close);
+void	wait_for_child(pid_t pid, int fd1, int fd2, int fd3);
+void	free_array(char **command, char **path_env, char *path);
 void	fd_error(char *msg, int fd1, int fd2, int fd3);
-void	error_free(char **command, char *path, char **path_env, char *msg);
+void	error_failure(char *msg, int return_flag);
 
 // ALGO
+
 void	*get_path(char **command, char **envp);
 void	*find_path(char **path, char **command);
 void	here_doc_init(int argc, char *argv[], char *envp[]);

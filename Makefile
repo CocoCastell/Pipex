@@ -8,10 +8,10 @@ CFLAGS = -Werror -Wextra -Wall
 
 LIBFT = libft/
 INC = includes/pipex.h
-SRCS = srcs/main.c srcs/utils.c
+SRCS = srcs/main.c srcs/utils.c srcs/error_manager.c
 OBJS = $(SRCS:.c=.o)
 
-BONUS_SRCS = bonus/main_bonus.c bonus/utils_bonus.c bonus/error_manager_bonus.c
+BONUS_SRCS = bonus/main_bonus.c bonus/utils_bonus.c bonus/error_manager_bonus.c bonus/init_bonus.c
 BONUS_OBJS = $(BONUS_SRCS:bonus.c=bonus.o)
 
 # Colors

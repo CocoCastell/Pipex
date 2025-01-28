@@ -44,10 +44,10 @@ void	bonus_parent_process(char *argv[], char *envp[], int pipe_fd[2], int data[3
 	}
 	else
 	{
-		close_fd(pipe_fd[0], new_pipe_fd[1], -1);
 		if (data[1] > 3)
 			close(pipe_fd[1]);
-		wait_for_child(pid, new_pipe_fd[0]);
+		wait_for_child(pid, new_pipe_fd[0], new_pipe_fd[1], pipe_fd[0]);
+		close_fd(pipe_fd[0], new_pipe_fd[1], -1);
 		data[1]++;
 		pipex_recursion(argv, envp, new_pipe_fd, data);
 	}
@@ -80,58 +80,18 @@ void	pre_recursion(char *argv[], char *envp[], int data[3])
 		command_execution(argv, envp, data);
 	}
 	else
-	{
+	{	
+		wait_for_child(pid, pipe_fd[0], pipe_fd[1], -1);
 		close(pipe_fd[1]);
-		wait_for_child(pid, pipe_fd[0]);
 		data[1]++;
 		pipex_recursion(argv, envp, pipe_fd, data);
 	}
 }
 
-void	file_init(int argc, char *argv[], char *envp[])
-{
-	int	infile_fd;
-	int	data[3];
-	
-	infile_fd = open(argv[1], O_RDONLY);
-	if (infile_fd == -1)
-		fd_error("Error opening file", -1, -1, -1);
-	if (dup2(infile_fd, STDIN_FILENO) == -1)
-		fd_error("Error dup2", infile_fd, -1, -1);
-	data[0] = argc;
-	data[1] = 2;
-	data[2] = 0;
-	pre_recursion(argv, envp, data);
-}
-
-void	here_doc_init(int argc, char *argv[], char *envp[])
-{
-	int	data[3];
-	int	pipe_fd[2];
-	char	*string;
-	size_t	string_length;
-
-	data[0] = argc;
-	data[1] = 3;
-	data[2] = 1;
-	if (pipe(pipe_fd) == -1)
-		fd_error("Pipe error", -1, -1, -1);
-	while (1)
-	{
-		string = get_next_line(0);
-		string_length = ft_strlen(string);
-		//ft_printf("string: |%s|, length is: |%d|, limiter is : |%s|\n", string, string_length, argv[2]);
-		if (ft_strncmp(argv[2], string, --string_length) == 0)
-			break ;
-		write(pipe_fd[1], string, sizeof(char) * ++string_length);
-	}
-	close(pipe_fd[1]);
-	pipex_recursion(argv, envp, pipe_fd, data);
-}
-
 int	main(int argc, char *argv[], char *envp[])
 {
-
+	if (envp == NULL)
+		return (ft_printf("Variable environment error\n"), 1);
 	if (argc >= 5)
 	{
 		if (ft_strncmp(argv[1], "here_doc", 8) == 0)
@@ -140,6 +100,6 @@ int	main(int argc, char *argv[], char *envp[])
 			file_init(argc, argv, envp);
 	}
 	else
-		return (ft_printf("Wrong number of arguments\n"), 1);
+		return (ft_printf("Wrong number of arguments\n"), 0);
 	return (0);
 }
