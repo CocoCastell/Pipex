@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:50:36 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:04:05 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,30 +19,6 @@ void    error_failure(char *msg, int return_flag)
                 exit(127);
         else
                 exit(EXIT_FAILURE);
-}
-
-void    wait_for_child(pid_t pid, int fd1_to_close, int fd2_to_close)
-{
-        int     status;
-
-        while (waitpid(pid, &status, 0) > 0)
-        {
-                if (WIFEXITED(status))
-                {
-                        if (WEXITSTATUS(status) == 127)
-                        {
-                                close(fd1_to_close);
-                                close(fd2_to_close);
-                                exit(127);
-                        }
-                        if (WEXITSTATUS(status) == 1)
-                        {
-                                close(fd1_to_close);
-                                close(fd2_to_close);
-                                exit(EXIT_FAILURE);
-                        }
-                }
-        }
 }
 
 void    fd_error(char *msg, int fd1, int fd2)

@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:54:20 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:08:37 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void    free_array(char **command, char **path_env, char *path)
                 free(path_env);
         }
         i = -1;
-        if (command =! NULL)
+        if (command != NULL)
         {
                 while (command[++i])
                         free(command[i]);
@@ -51,12 +51,12 @@ void	command_execution(char *argv[], char **envp, int data[3])
         if (path == NULL)
         {
                 free_array(command, NULL, NULL);
-                error_failure("Command not found", 1);
+                error_failure("Command not found", 127);
         }
         if (execve((const char *)path, command, envp) == -1)
         {
-                free_array(command, path, NULL);
-                error_failure("Execution error", 127);
+                free_array(command, NULL, path);
+                error_failure("Execution error", 1);
         }
 }
 

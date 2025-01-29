@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 20:31:42 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:16:16 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	bonus_parent_process(char *argv[], char *envp[], int pipe_fd[2], int data[3
 	{
 		if (data[1] > 3)
 			close(pipe_fd[1]);
-		wait_for_child(pid, new_pipe_fd[0], new_pipe_fd[1], pipe_fd[0]);
+		while (waitpid(pid, NULL, 0) > 0);
 		close_fd(pipe_fd[0], new_pipe_fd[1], -1);
 		data[1]++;
 		pipex_recursion(argv, envp, new_pipe_fd, data);
@@ -81,7 +81,7 @@ void	pre_recursion(char *argv[], char *envp[], int data[3])
 	}
 	else
 	{	
-		wait_for_child(pid, pipe_fd[0], pipe_fd[1], -1);
+		while (waitpid(pid, NULL, 0) > 0);
 		close(pipe_fd[1]);
 		data[1]++;
 		pipex_recursion(argv, envp, pipe_fd, data);

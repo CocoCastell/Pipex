@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:57:10 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:04:13 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	free_array(char **command, char **path_env, char *path);
 void	*get_path(char **command, char **envp);
 void	fd_error(char *msg, int fd1, int fd2);
 void	*find_path(char **path, char **command);
-void	wait_for_child(pid_t pid, int fd1_to_close, int fd2_to_close);
 void	command_execution(char **command, char **envp);
 void	child_process(char *argv[], char **envp, int pipe_fd[2]);
 void	error_failure(char *msg, int return_flag);

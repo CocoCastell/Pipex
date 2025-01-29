@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:27:44 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 14:45:00 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ void	error_failure(char *msg, int return_flag);
 
 // ALGO
 
+void	file_init(int argc, char *argv[], char *envp[]);
+void	here_doc_init(int argc, char *argv[], char *envp[]);
 void	*get_path(char **command, char **envp);
 void	*find_path(char **path, char **command);
 void	here_doc_init(int argc, char *argv[], char *envp[]);

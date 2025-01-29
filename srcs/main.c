@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:50:36 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:14:37 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ void	command_execution(char **command, char **envp)
 	if (path == NULL)
 	{
 		free_array(command, NULL, NULL);
-		error_failure("Command not found", 1);
+		error_failure("Command not found", 127);
 	}
 	if (execve((const char *)path, command, envp) == -1)
 	{
 		free_array(command, NULL, path);
-		error_failure("Execution error", 127);
+		error_failure("Execution error", 1);
 	}
 }
 
@@ -42,15 +42,18 @@ void    child_process(char *argv[], char **envp, int pipe_fd[2])
     close(pipe_fd[0]);
     infile_fd = open(argv[1], O_RDONLY);
     if (infile_fd == -1)
-        fd_error("Error opening first file", pipe_fd[1], -1);
-    if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-        fd_error("Dup2 error", infile_fd, pipe_fd[1]);
-    close(pipe_fd[1]);
-    if (dup2(infile_fd, STDIN_FILENO) == -1)
-        fd_error("Dup2 error", infile_fd, -1);
-    close(infile_fd);
-    command = ft_split(argv[2], ' ');
-    command_execution(command, envp);
+	{
+		perror("Error opening first file");
+		return ;
+	}
+	if (dup2(infile_fd, STDIN_FILENO) == -1)
+		fd_error("Dup2 error", infile_fd, -1);
+	close(infile_fd);
+	if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+		fd_error("Dup2 error", pipe_fd[1], -1);
+   close(pipe_fd[1]);
+   command = ft_split(argv[2], ' ');
+   command_execution(command, envp);
 }
 
 void    parent_process(char *argv[], char **envp, int pipe_fd[2])
@@ -90,7 +93,7 @@ int	main(int argc, char *argv[], char *envp[])
 		child_process(argv, envp, fd);
 	else
 	{
-		wait_for_child(pid, fd[0], fd[1]);
+        while (waitpid(pid, NULL, 0) > 0);
 		parent_process(argv, envp, fd);
 	}
 	return (0);

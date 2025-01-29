@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:54:20 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:15:27 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,26 +36,4 @@ void	fd_error(char *msg, int fd1, int fd2, int fd3)
 	close_fd(fd1, fd2, fd3);
 	perror(msg);
 	exit(1);
-}
-
-void	wait_for_child(pid_t pid, int fd1, int fd2, int fd3)
-{
-	int	status;
-
-	while (waitpid(pid, &status, 0) > 0)
-	{
-		if (WIFEXITED(status))
-		{
-			if (WEXITSTATUS(status) == 127)
-			{
-				close_fd(fd1, fd2, fd3);
-				exit(127);
-			}
-			if (WEXITSTATUS(status) == 1)
-			{
-				close_fd(fd1, fd2, fd3);
-				exit(1);
-			}
-		}
-	}
 }

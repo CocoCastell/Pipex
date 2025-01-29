@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 20:31:42 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 16:12:55 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,14 @@ void    file_init(int argc, char *argv[], char *envp[])
 
         infile_fd = open(argv[1], O_RDONLY);
         if (infile_fd == -1)
-                fd_error("Error opening file", -1, -1, -1);
+		{
+			perror("Error opening file");
+			return ;
+		}
         if (dup2(infile_fd, STDIN_FILENO) == -1)
                 fd_error("Error dup2", infile_fd, -1, -1);
-        data[0] = argc;
+        close(infile_fd);
+		data[0] = argc;
         data[1] = 2;
         data[2] = 0;
         pre_recursion(argv, envp, data);
