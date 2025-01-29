@@ -6,41 +6,41 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/26 16:58:23 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 19:06:28 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-void    free_array(char **command, char **path_env, char *path)
+void	free_array(char **command, char **path_env, char *path)
 {
-        int     i;
+	int	i;
 
-        i = -1;
-        if (path_env != NULL)
-        {
-                while (path_env[++i])
-                        free(path_env[i]);
-                free(path_env[i]);
-                free(path_env);
-        }
-        i = -1;
-        if (command != NULL)
-        {
-                while (command[++i])
-                        free(command[i]);
-                free(command[i]);
-                free(command);
-        }
-        if (path != NULL)
-                free(path);
+	i = -1;
+	if (path_env != NULL)
+	{
+		while (path_env[++i])
+			free(path_env[i]);
+		free(path_env[i]);
+		free(path_env);
+	}
+	i = -1;
+	if (command != NULL)
+	{
+		while (command[++i])
+			free(command[i]);
+		free(command[i]);
+		free(command);
+	}
+	if (path != NULL)
+		free(path);
 }
 
 void	*find_path(char **path, char **command)
 {
 	char	*full_path;	
 	char	*half_path;
-	int	i;
+	int		i;
 
 	i = 0;
 	while (path[i] != NULL)

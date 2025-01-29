@@ -6,68 +6,65 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/29 16:08:37 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/29 19:00:17 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex_bonus.h"
 
-void    free_array(char **command, char **path_env, char *path)
+void	free_array(char **command, char **path_env, char *path)
 {
-        int     i;
+	int	i;
 
-        i = -1;
-        if (path_env != NULL)
-        {
-                while (path_env[++i])
-                        free(path_env[i]);
-                free(path_env[i]);
-                free(path_env);
-        }
-        i = -1;
-        if (command != NULL)
-        {
-                while (command[++i])
-                        free(command[i]);
-                free(command[i]);
-                free(command);
-        }
-        if (path != NULL)
-                free(path);
+	i = -1;
+	if (path_env != NULL)
+	{
+		while (path_env[++i])
+			free(path_env[i]);
+		free(path_env[i]);
+		free(path_env);
+	}
+	i = -1;
+	if (command != NULL)
+	{
+		while (command[++i])
+			free(command[i]);
+		free(command[i]);
+		free(command);
+	}
+	if (path != NULL)
+		free(path);
 }
 
 void	command_execution(char *argv[], char **envp, int data[3])
 {
-        char    *path;
+	char	*path;
 	char	**command;
-	
+
 	command = ft_split(argv[data[1]], ' ');
-        if (command[0] == NULL)
-        {
-                free_array(command, NULL, NULL);
-                error_failure("Error: null pointeur", 1);
-        }
-        path = get_path(command, envp);
-        if (path == NULL)
-        {
-                free_array(command, NULL, NULL);
-                error_failure("Command not found", 127);
-        }
-        if (execve((const char *)path, command, envp) == -1)
-        {
-                free_array(command, NULL, path);
-                error_failure("Execution error", 1);
-        }
+	if (command[0] == NULL)
+	{
+		free_array(command, NULL, NULL);
+		error_failure("Error: null pointeur", 1);
+	}
+	path = get_path(command, envp);
+	if (path == NULL)
+	{
+		free_array(command, NULL, NULL);
+		error_failure("Command not found", 127);
+	}
+	if (execve((const char *)path, command, envp) == -1)
+	{
+		free_array(command, NULL, path);
+		error_failure("Execution error", 1);
+	}
 }
 
-void	outfile_command(char *argv[], char *envp[], int pipe_fd[2], int data[3])
+void	outfile_command(char *argv[], char *envp[], int data[3])
 {
 	int	file_fd;
-	
+
 	file_fd = -1;
-	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-		fd_error("Error dup2", pipe_fd[0], -1, -1);
-	close(pipe_fd[0]);
 	if (data[2] == 0)
 		file_fd = open(argv[data[0] - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else
@@ -84,10 +81,10 @@ void	*find_path(char **path, char **command)
 {
 	char	*full_path;	
 	char	*half_path;
-	int	i;
+	int		i;
 
-	i = 0;
-	while (path[i] != NULL)
+	i = -1;
+	while (path[++i] != NULL)
 	{
 		half_path = ft_strjoin(path[i], "/");
 		if (half_path == NULL)
@@ -100,12 +97,11 @@ void	*find_path(char **path, char **command)
 		if (full_path == NULL)
 		{
 			free_array(command, path, NULL);
-			error_failure("Error: null pointer",     1);
+			error_failure("Error: null pointer", 1);
 		}
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
 		free(full_path);
-		i++;
 	}
 	return (NULL);
 }
@@ -136,4 +132,3 @@ void	*get_path(char **command, char **envp)
 	free(path);
 	return (full_path);
 }
-
