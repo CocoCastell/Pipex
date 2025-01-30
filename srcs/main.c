@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/29 19:09:31 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/30 15:04:41 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	parent_process(char *argv[], char **envp, int pipe_fd[2])
 	int		outfile_fd;
 
 	close(pipe_fd[1]);
-	outfile_fd = open(argv[4], O_RDONLY | O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	outfile_fd = open(argv[4], O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (outfile_fd == -1)
 		fd_error("Error opening second file", pipe_fd[0], -1);
 	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
@@ -85,7 +85,7 @@ int	main(int argc, char *argv[], char *envp[])
 	if (argc != 5)
 		return (ft_printf("Wrong number of arguments\n"), 1);
 	if (envp == NULL)
-		return (ft_printf("Variable environment error\n"), 1);
+		return (ft_printf("Pipe error\n"), 1);
 	if (pipe(fd) == -1)
 		return (ft_printf("Pipe error\n"), 1);
 	pid = fork();
@@ -95,7 +95,11 @@ int	main(int argc, char *argv[], char *envp[])
 		child_process(argv, envp, fd);
 	else
 	{
-		while (waitpid(pid, NULL, 0) > 0);
+		while (1)
+		{
+			if (waitpid(pid, NULL, 0) > 0)
+				break ;
+		}
 		parent_process(argv, envp, fd);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/29 19:04:20 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/30 15:11:47 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // data[1] -> argument index
 // data[2] -> here_doc option (1) or not (0)
 
-void	parent_process(char *argv[], char *envp[], int data[3])
+void	process(char *argv[], char *envp[], int data[3])
 {
 	int		pipe_fd[2];
 	pid_t	pid;
@@ -30,15 +30,16 @@ void	parent_process(char *argv[], char *envp[], int data[3])
 	{
 		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
 			fd_error("Error dup2", pipe_fd[1], pipe_fd[0], -1);
-		close_fd(pipe_fd[1], pipe_fd[0]);
+		close_fd(pipe_fd[1], pipe_fd[0], -1);
 		command_execution(argv, envp, data);
 	}
 	else
 	{
-		while (waitpid(pid, NULL, 0) > 0);
+		while (waitpid(pid, NULL, 0) > 0)
+			data[2] += 1 - 1;
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
 			fd_error("Error dup2", pipe_fd[1], pipe_fd[0], -1);
-		close_fd(pipe_fd[1], pipe_fd[0]);
+		close_fd(pipe_fd[1], pipe_fd[0], -1);
 		data[1]++;
 		pipex_recursion(argv, envp, data);
 	}
@@ -49,7 +50,7 @@ void	pipex_recursion(char *argv[], char *envp[], int data[3])
 	if (data[1] == data[0] - 2)
 		outfile_command(argv, envp, data);
 	else
-		parent_process(argv, envp, data);
+		process(argv, envp, data);
 }
 
 void	file_init(int argc, char *argv[], char *envp[])

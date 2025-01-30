@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/29 19:06:28 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/30 15:03:24 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void	*find_path(char **path, char **command)
 	char	*half_path;
 	int		i;
 
-	i = 0;
-	while (path[i] != NULL)
+	i = -1;
+	while (path[++i] != NULL)
 	{
 		half_path = ft_strjoin(path[i], "/");
 		if (half_path == NULL)
@@ -61,7 +61,6 @@ void	*find_path(char **path, char **command)
 		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
 		free(full_path);
-		i++;
 	}
 	return (NULL);
 }

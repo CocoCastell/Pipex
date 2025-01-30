@@ -6,7 +6,7 @@
 /*   By: cochatel <cochatel@student.42barcelona.com>+#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 14:47:37 by cochatel          #+#    #+#             */
-/*   Updated: 2025/01/29 18:50:18 by cochatel         ###   ########.fr       */
+/*   Updated: 2025/01/30 15:07:21 by cochatel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,6 @@ void	here_doc_init(int argc, char *argv[], char *envp[]);
 void	command_execution(char *argv[], char **envp, int data[3]);
 void	outfile_command(char *argv[], char *envp[], int data[3]);
 void	pipex_recursion(char *argv[], char *envp[], int data[3]);
-void	processes(char *argv[], char *envp[], int data[3]);
+void	process(char *argv[], char *envp[], int data[3]);
 
 #endif
