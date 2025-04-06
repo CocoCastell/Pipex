@@ -8,8 +8,8 @@ and getting a better understanding of how UNIX/Linux handle processus.
 First, compile in the directory with one of the following commands
 ```
 make
-````
-````
+```
+```
 make bonus
 ```
 Then, run the programm with one argument, or more for the bonus
