@@ -14,7 +14,8 @@ make bonus
 ```
 Then, run the programm with one argument, or more for the bonus
 ```
-./pipex echo hey | cat > outfile
+./pipex echo hey
+./pipex_bonus echo hey | cat > outfile
 ```
 
 # Implementation
