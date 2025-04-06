@@ -26,4 +26,4 @@ Then, run the programm with one argument, or more for the bonus
 
 # Grade
 
-125/100  
+125/100 ✅  
