@@ -21,7 +21,7 @@ Then, run the programm with one argument, or more for the bonus
 
 - Using fork() function to create child processes.
 - Using dup2() to handle redirections with the STDIN, STDOUT and other file descriptors.
-- For bonus, I use recursion to create a child process for each command and use STDIN
+- For bonus, I use recursion to create a child process for each command and use STDIN  
   to get the user input for the heredoc (<<).
 
 # Grade
