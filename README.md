@@ -5,12 +5,9 @@ and getting a better understanding of how UNIX/Linux handle processus.
 
 # How to run
 
-First, compile in the directory with
+First, compile in the directory with one of the following commands
 ```
-make
-```
-or  
-```
+make  
 make bonus
 ```
 Then, run the programm with one argument, or more for the bonus
